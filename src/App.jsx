@@ -35,7 +35,7 @@ import {
  * - Mobile: 360 Height reduced (h-80).
  * - Tablet: 360 Height preserved (h-[500px]).
  * - Desktop: Fixed height 360 for consistent layout.
- * Feature: Music Volume control added (default 40%).
+ * Feature: Music Volume lowered to 10% (0.1).
  * Font: Kantumruy Pro
  */
 
@@ -348,15 +348,15 @@ const App = () => {
   // Set initial volume when audio ref is ready
   useEffect(() => {
     if (audioRef.current) {
-        audioRef.current.volume = 0.15; // Adjusted to 15% (Softer)
+        audioRef.current.volume = 0.1; // Lowered to 10%
     }
   }, []);
 
   const handleOpen = () => {
     setIsOpened(true);
     if (audioRef.current) {
-        // Ensure volume is low before playing
-        audioRef.current.volume = 0.15; 
+        // Ensure volume is set low before playing
+        audioRef.current.volume = 0.1; 
         audioRef.current.play().then(() => {
             setIsMusicPlaying(true);
         }).catch(err => {
@@ -411,8 +411,13 @@ const App = () => {
 
   return (
     <div className="font-kantumruy text-white w-full overflow-x-hidden bg-neutral-950">
-      {/* Global Audio Element */}
-      <audio ref={audioRef} src={getImg("audio/bg-music.mp3")} loop />
+      {/* Global Audio Element with 10% volume init */}
+      <audio 
+        ref={audioRef} 
+        src={getImg("audio/bg-music.mp3")} 
+        loop 
+        onCanPlay={(e) => e.currentTarget.volume = 0.1} 
+      />
       
       {/* Floating Music Button */}
       <button 
@@ -584,7 +589,7 @@ const App = () => {
                 </div>
 
                 {/* MOBILE/TABLET: Gallery & 360 (Moved to Bottom) */}
-                <div className="lg:hidden pb-8">
+                <div className="lg:hidden pb-12">
                     <GallerySection isDesktop={false} />
                     <ThreeSixtySection isDesktop={false} />
                 </div>
