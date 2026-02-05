@@ -23,7 +23,7 @@ import {
   Smartphone,
   Volume2, 
   VolumeX,
-  Play
+  Play // Icon for the play button
 } from 'lucide-react';
 
 /**
@@ -35,6 +35,7 @@ import {
  * - Mobile: 360 Height reduced (h-80).
  * - Tablet: 360 Height preserved (h-[500px]).
  * - Desktop: Fixed height 360 for consistent layout.
+ * Feature: Music Volume control added (default 40%).
  * Font: Kantumruy Pro
  */
 
@@ -254,6 +255,7 @@ const HeroSection = ({ isMobile }) => (
     </div>
 );
 
+// 360 Section with "Click to Load" functionality
 const ThreeSixtySection = ({ isDesktop = false }) => {
     const [start360, setStart360] = useState(false);
 
@@ -289,6 +291,7 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                     </div>
                 )}
                 
+                {/* 360 Badge - Only show when active or as overlay */}
                 {start360 && (
                      <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none z-20">
                         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
@@ -341,6 +344,13 @@ const App = () => {
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(null);
+
+  // Set initial volume when audio ref is ready
+  useEffect(() => {
+    if (audioRef.current) {
+        audioRef.current.volume = 0.4; // SET VOLUME TO 40%
+    }
+  }, []);
 
   const handleOpen = () => {
     setIsOpened(true);
@@ -485,14 +495,14 @@ const App = () => {
         // === MAIN INVITATION SCREEN ===
         <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start lg:justify-center pt-0 lg:pt-4 pb-0 lg:pb-10 px-0 lg:px-4 animate-fade-in-up">
           
-          {/* Main Card Container - Unified Scrolling enabled by removing fixed height and internal overflows */}
+          {/* Main Card Container */}
           <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 lg:border lg:border-neutral-800 lg:shadow-[0_0_60px_rgba(185,28,28,0.3)] lg:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row pb-24">
             
             {/* Top Decorative Line */}
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 lg:hidden"></div>
 
             {/* --- DESKTOP LEFT COLUMN --- */}
-            <div className="hidden lg:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 shrink-0">
+            <div className="hidden lg:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
                 <HeroSection isMobile={false} />
                 <ThreeSixtySection isDesktop={true} />
             </div>
