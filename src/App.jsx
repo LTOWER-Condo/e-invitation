@@ -33,7 +33,7 @@ import {
  * Layout: 
  * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
  * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
- * Fixes: Removed "Loft Condo" text from logo.
+ * Fixes: 360 Section resized to h-60 on mobile, adjusted padding for better fit.
  * Font: Kantumruy Pro
  */
 
@@ -253,12 +253,12 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
     const [start360, setStart360] = useState(false);
 
     return (
-        <div className={`px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
+        <div className={`px-4 md:px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
             <h3 className="text-center text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-40'}`}>
+            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-60'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
                 ) : (
@@ -499,7 +499,7 @@ const App = () => {
                 
                 <div className="h-auto md:flex-1 md:overflow-y-auto pb-24 md:pb-32 no-scrollbar"> 
                     
-                    <div className="pt-8 pb-6 text-center px-6 bg-black md:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm">
+                    <div className="pt-8 pb-6 text-center px-4 md:px-6 bg-black md:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm">
                       <div className="flex justify-center mb-4">
                         <LTowerLogo className="scale-75 origin-center" />
                       </div>
@@ -511,7 +511,7 @@ const App = () => {
                         <HeroSection />
                     </div>
 
-                    <div className="px-6 py-6 text-center relative">
+                    <div className="px-4 md:px-6 py-6 text-center relative">
                       <h1 className="text-xl font-bold leading-tight mb-4 text-white">
                         កម្មវិធីបើកលក់ <br/>
                         <span className="text-[#FCD34D] text-2xl">LTOWER ព្រះមុនីវង្ស 2</span>
@@ -580,7 +580,7 @@ const App = () => {
                     </div>
 
                     {/* RSVP FORM Section */}
-                    <div className="px-6 pt-6 bg-zinc-900 border-t border-neutral-800 md:border-none mb-12">
+                    <div className="px-4 md:px-6 pt-6 bg-zinc-900 border-t border-neutral-800 md:border-none mb-12">
                       {rsvpStatus === 'attending' ? (
                         <div className="bg-green-900/20 border border-green-900/50 rounded-lg p-6 text-center animate-fade-in">
                           <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
