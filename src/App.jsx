@@ -348,7 +348,7 @@ const App = () => {
   // Set initial volume when audio ref is ready
   useEffect(() => {
     if (audioRef.current) {
-        audioRef.current.volume = 0.4; // SET VOLUME TO 40%
+        audioRef.current.volume = 0.1; // SET VOLUME TO 40%
     }
   }, []);
 
