@@ -35,7 +35,7 @@ import {
  * - Mobile: 360 Height reduced (h-80).
  * - Tablet: 360 Height preserved (h-[500px]).
  * - Desktop: Fixed height 360 for consistent layout.
- * Feature: Music Volume lowered to 10% (0.1).
+ * Fixes: Telegram Logo fixed (clean paper plane icon).
  * Font: Kantumruy Pro
  */
 
@@ -265,7 +265,7 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            {/* ADJUSTED HEIGHT: h-80 (Mobile), md:h-[500px] (iPad), lg:h-[600px] (Desktop) */}
+            {/* Fixed height for Desktop to match flow, Tall for Mobile */}
             <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-[600px]' : 'h-80 md:h-[500px]'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
@@ -291,7 +291,6 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                     </div>
                 )}
                 
-                {/* 360 Badge - Only show when active or as overlay */}
                 {start360 && (
                      <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none z-20">
                         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
@@ -690,6 +689,11 @@ const App = () => {
                      </a>
                      
                      <div className="flex gap-3">
+                         <a href="https://t.me/lsaleservice" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#229ED9] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg">
+                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                 <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.373c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.414z"/>
+                             </svg>
+                         </a>
                          <a href="https://www.facebook.com/ltowercondo/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#1877F2] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg">
                             <Facebook className="w-4 h-4" />
                          </a>
