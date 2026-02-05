@@ -30,8 +30,9 @@ import {
  * Theme: Red & Gold Luxury
  * Content: Updated for "LTOWER Preah Monivong 2" event.
  * Layout: 
- * - Mobile: Vertical Stack (Header -> Hero -> Info -> 360 -> Gallery -> RSVP)
- * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
+ * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP), Natural Scrolling.
+ * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP), Fixed Height Dashboard.
+ * Fixes: Mobile blank screen issue (height: auto).
  * Font: Kantumruy Pro
  */
 
@@ -189,7 +190,9 @@ const LTowerLogo = ({ className = "" }) => (
       className="h-16 md:h-20 object-contain drop-shadow-lg"
       onError={(e) => { e.target.style.display = 'none'; }} 
     />
-
+    <h2 className="text-[10px] md:text-xs text-white font-bold tracking-[0.4em] uppercase mt-2 w-full text-center">
+      Loft Condo
+    </h2>
   </div>
 );
 
@@ -207,7 +210,7 @@ const SHOWROOM_IMAGES = [
   "images/IMG_8974.jpg"
 ];
 
-// --- SUB-COMPONENTS FOR CLEANER LAYOUT ---
+// --- SECTIONS FOR REUSE ---
 
 const HeroSection = () => (
     <div className="relative h-60 md:h-[50%] w-full group overflow-hidden shrink-0">
@@ -426,7 +429,7 @@ const App = () => {
         // === MAIN INVITATION SCREEN ===
         <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-center pt-4 pb-20 md:py-10 px-4 animate-fade-in-up">
           
-          {/* Main Card Container */}
+          {/* Main Card Container - Responsive Max Width & Layout */}
           <div className="w-full max-w-lg md:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] rounded-3xl overflow-hidden relative flex flex-col md:flex-row md:h-[90vh]">
             
             {/* Top Decorative Line */}
@@ -434,15 +437,15 @@ const App = () => {
 
             {/* --- DESKTOP LEFT COLUMN: Hero + 360 --- */}
             <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
-                <HeroSection isMobile={false} />
+                <HeroSection />
                 <ThreeSixtySection isDesktop={true} />
             </div>
 
             {/* --- RIGHT COLUMN / MOBILE MAIN (Content) --- */}
-            <div className="w-full md:w-[45%] flex flex-col bg-zinc-900 h-full relative">
+            <div className="w-full md:w-[45%] flex flex-col bg-zinc-900 h-auto md:h-full relative">
                 
                 {/* Scrollable Container */}
-                <div className="flex-1 md:overflow-y-auto pb-24 md:pb-32 no-scrollbar"> 
+                <div className="h-auto md:flex-1 md:overflow-y-auto pb-24 md:pb-32 no-scrollbar"> 
                     
                     {/* Header / Logo */}
                     <div className="pt-8 pb-6 text-center px-6 bg-black md:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm">
@@ -454,7 +457,7 @@ const App = () => {
 
                     {/* MOBILE: Hero Image (Top) */}
                     <div className="md:hidden">
-                        <HeroSection isMobile={true} />
+                        <HeroSection />
                     </div>
 
                     {/* Main Content (Info) */}
@@ -515,13 +518,16 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE ONLY: 360 (At Bottom) */}
+                    {/* MOBILE ONLY: 360 & Gallery (Moved to Bottom) */}
                     <div className="md:hidden">
                         <ThreeSixtySection isDesktop={false} />
+                        <GallerySection isDesktop={false} />
                     </div>
 
-                    {/* GALLERY (Both Desktop Right & Mobile Bottom) */}
-                    <GallerySection isDesktop={false} />
+                    {/* DESKTOP ONLY: Gallery (Bottom of right column) */}
+                    <div className="hidden md:block">
+                        <GallerySection isDesktop={true} />
+                    </div>
 
                     {/* RSVP FORM Section */}
                     <div className="px-6 pt-6 bg-zinc-900 border-t border-neutral-800 md:border-none mb-12">
