@@ -215,9 +215,7 @@ const LTowerLogo = ({ className = "" }) => (
       className="h-16 md:h-20 object-contain drop-shadow-lg"
       onError={(e) => { e.target.style.display = 'none'; }} 
     />
-    <h2 className="text-[10px] md:text-xs text-white font-bold tracking-[0.4em] uppercase mt-2 w-full text-center">
-      Loft Condo
-    </h2>
+
   </div>
 );
 
