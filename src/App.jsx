@@ -33,7 +33,7 @@ import {
  * Layout: 
  * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
  * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
- * Fixes: 360 Viewer height increased (3x) and touch scrolling prevented.
+ * Fixes: 360 Section height adjusted for mobile (shorter) vs tablet (taller).
  * Font: Kantumruy Pro
  */
 
@@ -124,10 +124,6 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     container.appendChild(renderer.domElement);
 
     const onPointerDown = (event) => {
-        // Prevent default behavior to stop scrolling on touch devices
-        if (event.type === 'touchstart') {
-            event.preventDefault();
-        }
         isUserInteracting = true;
         const clientX = event.clientX || (event.touches && event.touches[0].clientX);
         const clientY = event.clientY || (event.touches && event.touches[0].clientY);
@@ -138,10 +134,6 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     };
 
     const onPointerMove = (event) => {
-        // Prevent default behavior to stop scrolling on touch devices
-        if (event.type === 'touchmove') {
-            event.preventDefault();
-        }
         if (!isUserInteracting) return;
         const clientX = event.clientX || (event.touches && event.touches[0].clientX);
         const clientY = event.clientY || (event.touches && event.touches[0].clientY);
@@ -157,7 +149,6 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     container.addEventListener('mousemove', onPointerMove);
     container.addEventListener('mouseup', onPointerUp);
     container.addEventListener('mouseleave', onPointerUp);
-    // Use passive: false to allow preventDefault()
     container.addEventListener('touchstart', onPointerDown, { passive: false });
     container.addEventListener('touchmove', onPointerMove, { passive: false });
     container.addEventListener('touchend', onPointerUp);
@@ -199,8 +190,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
   }, [isLoaded, imageUrl]);
 
   return (
-    // Added touch-none to prevent browser handling touch gestures (scrolling/zooming) on this div
-    <div className="w-full h-full relative bg-black touch-none">
+    <div className="w-full h-full relative bg-black">
         {(!isLoaded || !textureLoaded) && (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 z-10">
                 <div className="flex flex-col items-center">
@@ -269,12 +259,11 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            {/* Changed height from h-80 to h-[700px] on mobile for extra tall view */}
-            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-[700px]'}`}>
+            {/* Changed height: h-[500px] on mobile (shorter), md:h-[700px] on tablet (tall) */}
+            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-[500px] md:h-[700px]'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
                 ) : (
-                    // STATIC PREVIEW MODE (Fast Loading)
                     <div 
                         className="relative w-full h-full cursor-pointer group bg-black" 
                         onClick={() => setStart360(true)}
@@ -422,6 +411,7 @@ const App = () => {
           )}
       </button>
 
+      {/* --- SCREEN CONTENT --- */}
       {!isOpened ? (
         // === COVER SCREEN ===
         <div className="fixed inset-0 bg-gradient-to-b from-[#8B0000] via-[#660000] to-black flex flex-col items-center justify-between py-12 px-6 overflow-hidden">
@@ -491,10 +481,10 @@ const App = () => {
         </div>
       ) : (
         // === MAIN INVITATION SCREEN ===
-        <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start md:justify-center pt-0 md:pt-4 pb-0 md:pb-10 px-0 md:px-4 animate-fade-in-up">
+        <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start lg:justify-center pt-0 lg:pt-4 pb-0 lg:pb-10 px-0 lg:px-4 animate-fade-in-up">
           
           {/* Main Card Container */}
-          <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] md:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row lg:h-[90vh]">
+          <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 lg:border lg:border-neutral-800 lg:shadow-[0_0_60px_rgba(185,28,28,0.3)] lg:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row lg:h-[90vh]">
             
             {/* Top Decorative Line */}
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 lg:hidden"></div>
@@ -580,7 +570,7 @@ const App = () => {
                     </div>
 
                     {/* MOBILE/TABLET: 360 & Gallery (Moved to Bottom) */}
-                    <div className="lg:hidden pb-8">
+                    <div className="lg:hidden pb-12">
                         <ThreeSixtySection isDesktop={false} />
                         <GallerySection isDesktop={false} />
                     </div>
