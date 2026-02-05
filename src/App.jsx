@@ -711,8 +711,8 @@ const App = () => {
                      
                      <div className="flex gap-3">
                          <a href="https://t.me/lsaleservice" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#229ED9] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg">
-                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                                 <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.62 0zm4.905 8.52c-.145 2.808-1.094 8.8-1.69 11.985-.294 1.576-1.073 1.956-2.029 1.96-1.528.007-2.906-1.047-4.14-2.116-1.928-1.66-3.264-2.834-5.328-4.434-2.385-1.79-1.238-2.67.768-4.484.507-.457 7.923-7.55 7.923-7.55s.319-.296.069-.475c-.25-.178-1.527.996-3.666 2.459-2.99 1.996-5.882 3.69-6.388 3.655-.935-.065-2.222-.445-3.238-.795-1.252-.429-1.694-1.084-.363-1.694 5.372-2.318 10.742-3.86 14.546-4.526 3.618-.636 4.316.59 4.2 1.63z"/>
+                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 translate-x-[-1px] translate-y-[1px]">
+                                 <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.373c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.414z"/>
                              </svg>
                          </a>
                          <a href="https://www.facebook.com/ltowercondo/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#1877F2] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg">
