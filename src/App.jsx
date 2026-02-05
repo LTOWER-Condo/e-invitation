@@ -348,13 +348,15 @@ const App = () => {
   // Set initial volume when audio ref is ready
   useEffect(() => {
     if (audioRef.current) {
-        audioRef.current.volume = 0.1; // SET VOLUME TO 40%
+        audioRef.current.volume = 0.15; // Adjusted to 15% (Softer)
     }
   }, []);
 
   const handleOpen = () => {
     setIsOpened(true);
     if (audioRef.current) {
+        // Ensure volume is low before playing
+        audioRef.current.volume = 0.15; 
         audioRef.current.play().then(() => {
             setIsMusicPlaying(true);
         }).catch(err => {
