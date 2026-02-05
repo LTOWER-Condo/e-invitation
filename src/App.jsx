@@ -32,9 +32,9 @@ import {
  * Content: Updated for "LTOWER Preah Monivong 2" event.
  * Layout: 
  * - Unified Scrolling (Single scrollbar for whole page).
- * - Mobile: Vertical Stack.
- * - Desktop: Split Screen (Visuals Left | Info Right) growing with content.
- * Fixes: Fixed Google Maps button accessibility on tablets.
+ * - Mobile: 360 Height reduced (h-80).
+ * - Tablet: 360 Height preserved (h-[500px]).
+ * - Desktop: Fixed height 360 for consistent layout.
  * Font: Kantumruy Pro
  */
 
@@ -124,7 +124,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
 
     const onPointerDown = (event) => {
         if (event.type === 'touchstart') {
-            event.preventDefault();
+            event.preventDefault(); // Stop page scroll
         }
         isUserInteracting = true;
         const clientX = event.clientX || (event.touches && event.touches[0].clientX);
@@ -137,7 +137,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
 
     const onPointerMove = (event) => {
         if (event.type === 'touchmove') {
-            event.preventDefault();
+            event.preventDefault(); // Stop page scroll
         }
         if (!isUserInteracting) return;
         const clientX = event.clientX || (event.touches && event.touches[0].clientX);
@@ -238,7 +238,7 @@ const SHOWROOM_IMAGES = [
 // --- SECTIONS COMPONENTS ---
 
 const HeroSection = ({ isMobile }) => (
-    <div className={`relative w-full group overflow-hidden shrink-0 ${isMobile ? 'h-80' : 'h-[500px]'}`}>
+    <div className={`relative w-full group overflow-hidden shrink-0 ${isMobile ? 'h-80' : 'h-[500px] lg:h-[600px]'}`}>
         <img 
             src={getImg("images/building.jpg")}
             alt="L Tower Loft Interior" 
@@ -263,8 +263,8 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            {/* Fixed height for Desktop to match flow, Tall for Mobile */}
-            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-[500px]' : 'h-[700px]'}`}>
+            {/* ADJUSTED HEIGHT: h-80 (Mobile), md:h-[500px] (iPad), lg:h-[600px] (Desktop) */}
+            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-[600px]' : 'h-80 md:h-[500px]'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
                 ) : (
@@ -485,14 +485,14 @@ const App = () => {
         // === MAIN INVITATION SCREEN ===
         <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start lg:justify-center pt-0 lg:pt-4 pb-0 lg:pb-10 px-0 lg:px-4 animate-fade-in-up">
           
-          {/* Main Card Container */}
-          <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 lg:border lg:border-neutral-800 lg:shadow-[0_0_60px_rgba(185,28,28,0.3)] lg:rounded-3xl relative flex flex-col lg:flex-row pb-20">
+          {/* Main Card Container - Unified Scrolling enabled by removing fixed height and internal overflows */}
+          <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 lg:border lg:border-neutral-800 lg:shadow-[0_0_60px_rgba(185,28,28,0.3)] lg:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row pb-24">
             
             {/* Top Decorative Line */}
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 lg:hidden"></div>
 
             {/* --- DESKTOP LEFT COLUMN --- */}
-            <div className="hidden lg:flex w-[55%] flex-col bg-black/20 relative lg:border-r border-neutral-800 shrink-0">
+            <div className="hidden lg:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 shrink-0">
                 <HeroSection isMobile={false} />
                 <ThreeSixtySection isDesktop={true} />
             </div>
@@ -572,7 +572,7 @@ const App = () => {
                 </div>
 
                 {/* MOBILE/TABLET: Gallery & 360 (Moved to Bottom) */}
-                <div className="lg:hidden pb-4">
+                <div className="lg:hidden pb-8">
                     <GallerySection isDesktop={false} />
                     <ThreeSixtySection isDesktop={false} />
                 </div>
@@ -583,7 +583,7 @@ const App = () => {
                 </div>
 
                 {/* RSVP FORM Section */}
-                <div className="px-4 md:px-6 pt-6 bg-zinc-900 border-t border-neutral-800 lg:border-none mb-16 lg:mb-12">
+                <div className="px-4 md:px-6 pt-6 bg-zinc-900 border-t border-neutral-800 lg:border-none mb-24 lg:mb-12">
                   {rsvpStatus === 'attending' ? (
                     <div className="bg-green-900/20 border border-green-900/50 rounded-lg p-6 text-center animate-fade-in">
                       <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
