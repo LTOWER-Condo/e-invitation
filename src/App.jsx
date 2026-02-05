@@ -31,8 +31,9 @@ import {
  * Theme: Red & Gold Luxury
  * Content: Updated for "LTOWER Preah Monivong 2" event.
  * Layout: 
- * - Mobile/Tablet: Vertical Scroll (Window Scroll) for better UX.
- * - Desktop: Fixed Split Screen (Dashboard style).
+ * - Mobile: Full-width Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP). Natural Scroll.
+ * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP). Fixed Dashboard.
+ * Fixes: Larger 360 view on mobile, Tablet width adjusted.
  * Font: Kantumruy Pro
  */
 
@@ -230,7 +231,8 @@ const SHOWROOM_IMAGES = [
 // --- SECTIONS COMPONENTS ---
 
 const HeroSection = ({ isMobile }) => (
-    <div className={`relative w-full group overflow-hidden shrink-0 ${isMobile ? 'h-64' : 'h-1/2'}`}>
+    // Mobile height increased to h-80 (20rem) for bigger impact
+    <div className={`relative w-full group overflow-hidden shrink-0 ${isMobile ? 'h-80' : 'h-1/2'}`}>
         <img 
             src={getImg("images/building.jpg")}
             alt="L Tower Loft Interior" 
@@ -255,7 +257,8 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-64'}`}>
+            {/* Mobile height increased to h-80 to match Hero Section */}
+            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-80'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
                 ) : (
@@ -475,28 +478,26 @@ const App = () => {
         </div>
       ) : (
         // === MAIN INVITATION SCREEN ===
-        <div className="min-h-screen w-full bg-neutral-950 flex flex-col lg:flex-row items-center justify-center lg:py-10 animate-fade-in-up">
+        <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start lg:justify-center pt-0 lg:pt-4 pb-0 lg:pb-10 px-0 lg:px-4 animate-fade-in-up">
           
           {/* Main Card Container */}
-          {/* Using flex-col for mobile (stack) and lg:flex-row for desktop (split) */}
-          <div className="w-full lg:max-w-7xl mx-auto bg-zinc-900 lg:border lg:border-neutral-800 lg:shadow-[0_0_60px_rgba(185,28,28,0.3)] lg:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row h-auto lg:h-[85vh]">
+          {/* Changed max-w-lg to md:max-w-3xl for tablets, and lg:max-w-7xl for desktops */}
+          <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 lg:border lg:border-neutral-800 lg:shadow-[0_0_60px_rgba(185,28,28,0.3)] lg:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row h-auto lg:h-[85vh]">
             
-            {/* Top Decorative Line (Mobile Only) */}
+            {/* Top Decorative Line */}
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 lg:hidden"></div>
 
-            {/* --- LEFT COLUMN: Visuals (Desktop) / Hidden on Mobile --- */}
+            {/* --- DESKTOP LEFT COLUMN --- */}
             <div className="hidden lg:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
                 <HeroSection isMobile={false} />
                 <ThreeSixtySection isDesktop={true} />
             </div>
 
-            {/* --- RIGHT COLUMN / MOBILE MAIN CONTENT --- */}
-            <div className="w-full lg:w-[45%] flex flex-col bg-zinc-900 h-full relative">
+            {/* --- RIGHT COLUMN / MOBILE MAIN --- */}
+            <div className="w-full lg:w-[45%] flex flex-col bg-zinc-900 h-auto lg:h-full relative">
                 
-                {/* Scrollable Container */}
-                <div className="h-full lg:overflow-y-auto pb-0 lg:pb-24 no-scrollbar flex flex-col"> 
+                <div className="h-auto lg:flex-1 lg:overflow-y-auto pb-24 lg:pb-32 no-scrollbar"> 
                     
-                    {/* Header / Logo */}
                     <div className="pt-8 pb-6 text-center px-4 md:px-6 bg-black lg:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm shadow-md lg:shadow-none">
                       <div className="flex justify-center mb-4">
                         <LTowerLogo className="scale-75 origin-center" />
