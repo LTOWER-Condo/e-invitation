@@ -22,17 +22,16 @@ import {
   User, 
   Smartphone,
   Volume2, 
-  VolumeX
+  VolumeX,
+  Play
 } from 'lucide-react';
 
 /**
  * L TOWER LOFT CONDO - INVITATION
  * Theme: Red & Gold Luxury
  * Content: Updated for "LTOWER Preah Monivong 2" event.
- * Layout: 
- * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
- * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
- * Fixes: Smart Image Path detection for Localhost vs GitHub Pages.
+ * Layout: Responsive & Optimized.
+ * Fixes: Lazy loading 360 viewer to prevent page freeze.
  * Font: Kantumruy Pro
  */
 
@@ -41,15 +40,9 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwscAXNDULxa5
 
 // --- IMAGE PATH HELPER (SMART DETECT) ---
 const getImg = (path) => {
-  // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  
-  // Check if running on Localhost (Computer) or Production (GitHub)
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  
-  // If Local, use root path '/'. If GitHub, use repo name '/e-invitation/'
   const basePath = isLocal ? '/' : '/e-invitation/';
-  
   return basePath + cleanPath;
 };
 
@@ -65,10 +58,11 @@ const Particle = ({ delay, left }) => (
   />
 );
 
-// --- 360 SPHERICAL VIEWER COMPONENT (Three.js) ---
+// --- 360 SPHERICAL VIEWER COMPONENT (Optimized) ---
 const ThreeSixtyViewer = ({ imageUrl }) => {
   const containerRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [textureLoaded, setTextureLoaded] = useState(false);
 
   useEffect(() => {
     if (window.THREE) {
@@ -110,7 +104,9 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     // Use helper to resolve path correctly
     const finalUrl = imageUrl.startsWith('http') ? imageUrl : getImg(imageUrl);
 
-    const texture = textureLoader.load(finalUrl, undefined, undefined, (err) => {
+    const texture = textureLoader.load(finalUrl, () => {
+        setTextureLoaded(true); // Texture loaded callback
+    }, undefined, (err) => {
        console.warn("Texture load error", err);
     });
     
@@ -195,7 +191,19 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     };
   }, [isLoaded, imageUrl]);
 
-  return <div ref={containerRef} className="w-full h-full cursor-move outline-none" />;
+  return (
+    <div className="w-full h-full relative bg-black">
+        {(!isLoaded || !textureLoaded) && (
+            <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 z-10">
+                <div className="flex flex-col items-center">
+                    <Loader className="w-8 h-8 text-amber-500 animate-spin mb-2" />
+                    <span className="text-xs text-gray-400">Loading 3D View...</span>
+                </div>
+            </div>
+        )}
+        <div ref={containerRef} className="w-full h-full cursor-move outline-none" />
+    </div>
+  );
 };
 
 // --- LOGO COMPONENT ---
@@ -228,6 +236,7 @@ const SHOWROOM_IMAGES = [
 ];
 
 // --- SECTIONS COMPONENTS ---
+
 const HeroSection = () => (
     <div className="relative h-60 md:h-1/2 w-full group overflow-hidden shrink-0">
         <img 
@@ -245,34 +254,55 @@ const HeroSection = () => (
     </div>
 );
 
-const ThreeSixtySection = ({ isDesktop = false }) => (
-    <div className={`px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
-        <h3 className="text-center text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
-            <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
-        </h3>
+const ThreeSixtySection = ({ isDesktop = false }) => {
+    const [start360, setStart360] = useState(false);
 
-        <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-40'}`}>
-            
-            {/* 360 VIEWER */}
-            <ThreeSixtyViewer imageUrl="images/360.jpg" />
-            
-            <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                <span className="text-[8px] font-bold uppercase tracking-wider text-white">360° Sphere</span>
+    return (
+        <div className={`px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
+            <h3 className="text-center text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
+            </h3>
+
+            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-40'}`}>
+                {start360 ? (
+                    <ThreeSixtyViewer imageUrl="images/360.jpg" />
+                ) : (
+                    <div className="relative w-full h-full cursor-pointer group" onClick={() => setStart360(true)}>
+                        <img 
+                            src={getImg("images/360.jpg")} 
+                            alt="360 Preview" 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
+                            onError={(e) => { e.target.src = getImg("images/building.jpg"); }}
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-2 group-hover:bg-black/30 transition-colors">
+                            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-xl group-hover:scale-110 transition-transform">
+                                <Play className="w-5 h-5 text-white fill-current" />
+                            </div>
+                            <span className="text-xs font-bold text-white uppercase tracking-wider">Tap to View 360°</span>
+                        </div>
+                    </div>
+                )}
+                
+                {start360 && (
+                     <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none">
+                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                        <span className="text-[8px] font-bold uppercase tracking-wider text-white">360° Sphere</span>
+                    </div>
+                )}
             </div>
-        </div>
 
-        <a 
-            href="https://maps.app.goo.gl/HKyVoqJC5kiFvGZC9" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg border border-neutral-700 transition-colors group"
-        >
-            <MapPin className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold uppercase tracking-wider">បង្ហាញផែនទី (Google Maps)</span>
-        </a>
-    </div>
-);
+            <a 
+                href="https://maps.app.goo.gl/HKyVoqJC5kiFvGZC9" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg border border-neutral-700 transition-colors group"
+            >
+                <MapPin className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
+                <span className="text-xs font-bold uppercase tracking-wider">បង្ហាញផែនទី (Google Maps)</span>
+            </a>
+        </div>
+    );
+};
 
 const GallerySection = ({ isDesktop = false }) => (
     <div className={`bg-zinc-900 ${isDesktop ? 'bg-transparent pt-6' : 'pt-6 pb-6 border-t border-neutral-800'} overflow-hidden shrink-0`}>
@@ -539,7 +569,7 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE ONLY: 360 & Gallery (Moved to Bottom) */}
+                    {/* MOBILE ONLY: 360 (Moved to Bottom) */}
                     <div className="md:hidden">
                         <ThreeSixtySection isDesktop={false} />
                     </div>
