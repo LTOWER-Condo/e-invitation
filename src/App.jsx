@@ -29,7 +29,11 @@ import {
 /**
  * L TOWER LOFT CONDO - INVITATION
  * Theme: Red & Gold Luxury
- * Fixes: "Click to Load" for 360 viewer to prevent mobile freezing/blank screen.
+ * Content: Updated for "LTOWER Preah Monivong 2" event.
+ * Layout: 
+ * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
+ * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
+ * Fixes: 360 Viewer height increased (3x) and touch scrolling prevented.
  * Font: Kantumruy Pro
  */
 
@@ -120,6 +124,10 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     container.appendChild(renderer.domElement);
 
     const onPointerDown = (event) => {
+        // Prevent default behavior to stop scrolling on touch devices
+        if (event.type === 'touchstart') {
+            event.preventDefault();
+        }
         isUserInteracting = true;
         const clientX = event.clientX || (event.touches && event.touches[0].clientX);
         const clientY = event.clientY || (event.touches && event.touches[0].clientY);
@@ -130,6 +138,10 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     };
 
     const onPointerMove = (event) => {
+        // Prevent default behavior to stop scrolling on touch devices
+        if (event.type === 'touchmove') {
+            event.preventDefault();
+        }
         if (!isUserInteracting) return;
         const clientX = event.clientX || (event.touches && event.touches[0].clientX);
         const clientY = event.clientY || (event.touches && event.touches[0].clientY);
@@ -145,6 +157,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     container.addEventListener('mousemove', onPointerMove);
     container.addEventListener('mouseup', onPointerUp);
     container.addEventListener('mouseleave', onPointerUp);
+    // Use passive: false to allow preventDefault()
     container.addEventListener('touchstart', onPointerDown, { passive: false });
     container.addEventListener('touchmove', onPointerMove, { passive: false });
     container.addEventListener('touchend', onPointerUp);
@@ -186,7 +199,8 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
   }, [isLoaded, imageUrl]);
 
   return (
-    <div className="w-full h-full relative bg-black">
+    // Added touch-none to prevent browser handling touch gestures (scrolling/zooming) on this div
+    <div className="w-full h-full relative bg-black touch-none">
         {(!isLoaded || !textureLoaded) && (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 z-10">
                 <div className="flex flex-col items-center">
@@ -209,9 +223,6 @@ const LTowerLogo = ({ className = "" }) => (
       className="h-16 md:h-20 object-contain drop-shadow-lg"
       onError={(e) => { e.target.style.display = 'none'; }} 
     />
-    <h2 className="text-[10px] md:text-xs text-white font-bold tracking-[0.4em] uppercase mt-2 w-full text-center">
-      Loft Condo
-    </h2>
   </div>
 );
 
@@ -230,8 +241,9 @@ const SHOWROOM_IMAGES = [
 ];
 
 // --- SECTIONS COMPONENTS ---
-const HeroSection = () => (
-    <div className="relative h-60 md:h-1/2 w-full group overflow-hidden shrink-0">
+
+const HeroSection = ({ isMobile }) => (
+    <div className={`relative w-full group overflow-hidden shrink-0 ${isMobile ? 'h-80' : 'h-1/2'}`}>
         <img 
             src={getImg("images/building.jpg")}
             alt="L Tower Loft Interior" 
@@ -252,12 +264,13 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
     const [start360, setStart360] = useState(false);
 
     return (
-        <div className={`px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
+        <div className={`px-4 md:px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
             <h3 className="text-center text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-40'}`}>
+            {/* Changed height from h-80 to h-[700px] on mobile for extra tall view */}
+            <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-[700px]'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
                 ) : (
@@ -393,9 +406,11 @@ const App = () => {
   };
 
   return (
-    <div className="font-kantumruy text-white w-full overflow-x-hidden">
+    <div className="font-kantumruy text-white w-full overflow-x-hidden bg-neutral-950">
+      {/* Global Audio Element */}
       <audio ref={audioRef} src={getImg("audio/bg-music.mp3")} loop />
       
+      {/* Floating Music Button */}
       <button 
           onClick={toggleMusic}
           className="fixed top-4 right-4 z-[100] w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white hover:scale-110 transition-transform shadow-xl"
@@ -478,22 +493,24 @@ const App = () => {
         // === MAIN INVITATION SCREEN ===
         <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start md:justify-center pt-0 md:pt-4 pb-0 md:pb-10 px-0 md:px-4 animate-fade-in-up">
           
-          <div className="w-full max-w-lg md:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] md:rounded-3xl overflow-hidden relative flex flex-col md:flex-row md:h-[90vh]">
+          {/* Main Card Container */}
+          <div className="w-full md:max-w-3xl lg:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] md:rounded-3xl overflow-hidden relative flex flex-col lg:flex-row lg:h-[90vh]">
             
-            <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 md:hidden"></div>
+            {/* Top Decorative Line */}
+            <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 lg:hidden"></div>
 
             {/* --- DESKTOP LEFT COLUMN --- */}
-            <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
-                <HeroSection />
+            <div className="hidden lg:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
+                <HeroSection isMobile={false} />
                 <ThreeSixtySection isDesktop={true} />
             </div>
 
             {/* --- RIGHT COLUMN / MOBILE MAIN --- */}
-            <div className="w-full md:w-[45%] flex flex-col bg-zinc-900 h-auto md:h-full relative">
+            <div className="w-full lg:w-[45%] flex flex-col bg-zinc-900 h-auto lg:h-full relative">
                 
-                <div className="h-auto md:flex-1 md:overflow-y-auto pb-24 md:pb-32 no-scrollbar"> 
+                <div className="h-auto lg:flex-1 lg:overflow-y-auto pb-24 lg:pb-32 no-scrollbar"> 
                     
-                    <div className="pt-8 pb-6 text-center px-6 bg-black md:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm">
+                    <div className="pt-8 pb-6 text-center px-4 md:px-6 bg-black lg:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm shadow-md lg:shadow-none">
                       <div className="flex justify-center mb-4">
                         <LTowerLogo className="scale-75 origin-center" />
                       </div>
@@ -501,18 +518,18 @@ const App = () => {
                     </div>
 
                     {/* MOBILE: Hero Image (Top) */}
-                    <div className="md:hidden">
-                        <HeroSection />
+                    <div className="lg:hidden">
+                        <HeroSection isMobile={true} />
                     </div>
 
-                    <div className="px-6 py-6 text-center relative">
-                      <h1 className="text-xl font-bold leading-tight mb-4 text-white">
+                    <div className="px-4 md:px-6 py-6 text-center relative">
+                      <h1 className="text-xl md:text-2xl font-bold leading-tight mb-4 text-white">
                         កម្មវិធីបើកលក់ <br/>
-                        <span className="text-[#FCD34D] text-2xl">LTOWER ព្រះមុនីវង្ស 2</span>
+                        <span className="text-[#FCD34D] text-2xl md:text-3xl">LTOWER ព្រះមុនីវង្ស 2</span>
                       </h1>
                       
                       <div className="bg-white/5 rounded-xl p-4 border border-white/10 mb-6">
-                        <p className="text-gray-300 text-xs leading-relaxed font-light text-justify">
+                        <p className="text-gray-300 text-sm leading-relaxed font-light text-justify">
                           <span className="font-bold text-amber-500 text-sm block mb-2 text-center">សូមគោរពអញ្ជើញ!</span>
                           ឯកឧត្តម លោកជំទាវ អ្នកឧកញ៉ា ឧកញ៉ា លោក លោកស្រី អ្នកនាង កញ្ញា ចូលរួមកម្មវិធីបើកលក់តម្លៃពិសេសមិនធ្លាប់មាន ស្ថិតនៅលើទីតាំងល្អ ដែលមានសក្តានុពល និងផ្តល់ផលចំនេញច្រើន ទាំងការវិនិយោគ ការដាក់ជួល និងការស្នាក់នៅ។
                         </p>
@@ -562,19 +579,19 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE ONLY: 360 & Gallery (Moved to Bottom) */}
-                    <div className="md:hidden">
+                    {/* MOBILE/TABLET: 360 & Gallery (Moved to Bottom) */}
+                    <div className="lg:hidden pb-8">
                         <ThreeSixtySection isDesktop={false} />
                         <GallerySection isDesktop={false} />
                     </div>
 
                     {/* DESKTOP ONLY: Gallery */}
-                    <div className="hidden md:block">
+                    <div className="hidden lg:block">
                         <GallerySection isDesktop={true} />
                     </div>
 
                     {/* RSVP FORM Section */}
-                    <div className="px-6 pt-6 bg-zinc-900 border-t border-neutral-800 md:border-none mb-12">
+                    <div className="px-4 md:px-6 pt-6 bg-zinc-900 border-t border-neutral-800 lg:border-none mb-24 lg:mb-12">
                       {rsvpStatus === 'attending' ? (
                         <div className="bg-green-900/20 border border-green-900/50 rounded-lg p-6 text-center animate-fade-in">
                           <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-white">
@@ -655,8 +672,8 @@ const App = () => {
             </div>
 
             {/* Footer Actions (Sticky) */}
-            <div className="absolute bottom-0 w-full bg-black/95 backdrop-blur-lg p-4 flex flex-col gap-3 border-t border-neutral-800 z-20 md:rounded-br-3xl">
-                 <div className="flex justify-between items-center">
+            <div className="fixed lg:absolute bottom-0 w-full bg-black/95 backdrop-blur-lg p-4 flex flex-col gap-3 border-t border-neutral-800 z-50 lg:rounded-br-3xl">
+                 <div className="flex justify-between items-center max-w-7xl mx-auto w-full lg:w-auto">
                      <a href="tel:+855766333336" className="flex items-center gap-2 text-white font-bold hover:text-amber-500 transition-colors bg-neutral-800/50 px-3 py-2 rounded-full border border-white/10">
                         <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-900/50">
                             <Phone className="w-3 h-3 text-white" />
