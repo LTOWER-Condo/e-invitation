@@ -30,9 +30,8 @@ import {
  * Theme: Red & Gold Luxury
  * Content: Updated for "LTOWER Preah Monivong 2" event.
  * Layout: 
- * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP), Natural Scrolling.
- * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP), Fixed Height Dashboard.
- * Fixes: Mobile blank screen issue (height: auto).
+ * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
+ * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
  * Font: Kantumruy Pro
  */
 
@@ -51,7 +50,7 @@ const Particle = ({ delay, left }) => (
   />
 );
 
-// --- 360 SPHERICAL VIEWER COMPONENT ---
+// --- 360 SPHERICAL VIEWER COMPONENT (Three.js) ---
 const ThreeSixtyViewer = ({ imageUrl }) => {
   const containerRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -210,10 +209,9 @@ const SHOWROOM_IMAGES = [
   "images/IMG_8974.jpg"
 ];
 
-// --- SECTIONS FOR REUSE ---
-
+// --- SECTIONS COMPONENTS ---
 const HeroSection = () => (
-    <div className="relative h-60 md:h-[50%] w-full group overflow-hidden shrink-0">
+    <div className="relative h-60 md:h-1/2 w-full group overflow-hidden shrink-0">
         <img 
             src="images/building.jpg"
             alt="L Tower Loft Interior" 
@@ -230,12 +228,12 @@ const HeroSection = () => (
 );
 
 const ThreeSixtySection = ({ isDesktop = false }) => (
-    <div className={`px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent flex-grow' : 'border-t border-neutral-800'} space-y-4`}>
+    <div className={`px-6 py-6 bg-zinc-900 ${isDesktop ? 'bg-transparent h-1/2' : 'border-t border-neutral-800'} space-y-4`}>
         <h3 className="text-center text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
             <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
         </h3>
 
-        <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-64' : 'h-40'}`}>
+        <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-40'}`}>
             <ThreeSixtyViewer imageUrl="images/360.jpg" />
             <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none">
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
@@ -429,14 +427,14 @@ const App = () => {
         // === MAIN INVITATION SCREEN ===
         <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-center pt-4 pb-20 md:py-10 px-4 animate-fade-in-up">
           
-          {/* Main Card Container - Responsive Max Width & Layout */}
+          {/* Main Card Container */}
           <div className="w-full max-w-lg md:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] rounded-3xl overflow-hidden relative flex flex-col md:flex-row md:h-[90vh]">
             
             {/* Top Decorative Line */}
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 md:hidden"></div>
 
             {/* --- DESKTOP LEFT COLUMN: Hero + 360 --- */}
-            <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
+            <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-hidden">
                 <HeroSection />
                 <ThreeSixtySection isDesktop={true} />
             </div>
@@ -518,16 +516,13 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE ONLY: 360 & Gallery (Moved to Bottom) */}
+                    {/* MOBILE ONLY: 360 (Moved to Bottom) */}
                     <div className="md:hidden">
                         <ThreeSixtySection isDesktop={false} />
-                        <GallerySection isDesktop={false} />
                     </div>
 
-                    {/* DESKTOP ONLY: Gallery (Bottom of right column) */}
-                    <div className="hidden md:block">
-                        <GallerySection isDesktop={true} />
-                    </div>
+                    {/* GALLERY (Both Desktop Right & Mobile Bottom) */}
+                    <GallerySection isDesktop={true} />
 
                     {/* RSVP FORM Section */}
                     <div className="px-6 pt-6 bg-zinc-900 border-t border-neutral-800 md:border-none mb-12">
