@@ -32,11 +32,26 @@ import {
  * Layout: 
  * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
  * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
+ * Fixes: Smart Image Path detection for Localhost vs GitHub Pages.
  * Font: Kantumruy Pro
  */
 
 // --- GOOGLE SHEET CONFIGURATION ---
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwscAXNDULxa5vLhz01vtzvsI-ZEGtlEA3vzjw4BDn-lLwQ980RslbsgqSBUHmorwA/exec";
+
+// --- IMAGE PATH HELPER (SMART DETECT) ---
+const getImg = (path) => {
+  // Remove leading slash if present
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  
+  // Check if running on Localhost (Computer) or Production (GitHub)
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  // If Local, use root path '/'. If GitHub, use repo name '/e-invitation/'
+  const basePath = isLocal ? '/' : '/e-invitation/';
+  
+  return basePath + cleanPath;
+};
 
 // --- UTILS FOR PARTICLES ---
 const Particle = ({ delay, left }) => (
@@ -92,8 +107,11 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     geometry.scale(-1, 1, 1);
 
     const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load(imageUrl, undefined, undefined, (err) => {
-       console.warn("Texture load error, using fallback");
+    // Use helper to resolve path correctly
+    const finalUrl = imageUrl.startsWith('http') ? imageUrl : getImg(imageUrl);
+
+    const texture = textureLoader.load(finalUrl, undefined, undefined, (err) => {
+       console.warn("Texture load error", err);
     });
     
     const material = new THREE.MeshBasicMaterial({ map: texture });
@@ -184,7 +202,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
 const LTowerLogo = ({ className = "" }) => (
   <div className={`flex flex-col items-center justify-center ${className}`}>
     <img 
-      src="images/logo.png" 
+      src={getImg("images/logo.png")} 
       alt="L TOWER Logo" 
       className="h-16 md:h-20 object-contain drop-shadow-lg"
       onError={(e) => { e.target.style.display = 'none'; }} 
@@ -213,7 +231,7 @@ const SHOWROOM_IMAGES = [
 const HeroSection = () => (
     <div className="relative h-60 md:h-1/2 w-full group overflow-hidden shrink-0">
         <img 
-            src="images/building.jpg"
+            src={getImg("images/building.jpg")}
             alt="L Tower Loft Interior" 
             className="w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-110"
             onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1000&auto=format&fit=crop"; }}
@@ -234,7 +252,10 @@ const ThreeSixtySection = ({ isDesktop = false }) => (
         </h3>
 
         <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-full' : 'h-40'}`}>
+            
+            {/* 360 VIEWER */}
             <ThreeSixtyViewer imageUrl="images/360.jpg" />
+            
             <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none">
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
                 <span className="text-[8px] font-bold uppercase tracking-wider text-white">360° Sphere</span>
@@ -264,7 +285,7 @@ const GallerySection = ({ isDesktop = false }) => (
                 {[...SHOWROOM_IMAGES, ...SHOWROOM_IMAGES].map((img, idx) => (
                     <div key={idx} className="w-48 h-32 mx-2 rounded-lg overflow-hidden shrink-0 border border-neutral-700 relative group">
                         <img 
-                            src={img} 
+                            src={getImg(img)} 
                             alt={`Showroom ${idx}`} 
                             loading="lazy"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -342,8 +363,10 @@ const App = () => {
 
   return (
     <div className="font-kantumruy text-white w-full overflow-x-hidden">
-      <audio ref={audioRef} src="audio/bg-music.mp3" loop />
+      {/* Global Audio Element */}
+      <audio ref={audioRef} src={getImg("audio/bg-music.mp3")} loop />
       
+      {/* Floating Music Button */}
       <button 
           onClick={toggleMusic}
           className="fixed top-4 right-4 z-[100] w-10 h-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 text-white hover:scale-110 transition-transform shadow-xl"
@@ -368,7 +391,7 @@ const App = () => {
 
           <div className="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
              <img 
-              src="images/building.jpg" 
+              src={getImg("images/building.jpg")}
               alt="Luxury Condo" 
               className="w-full h-full object-cover grayscale contrast-125"
               onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1000&auto=format&fit=crop"; }} 
@@ -434,7 +457,7 @@ const App = () => {
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 md:hidden"></div>
 
             {/* --- DESKTOP LEFT COLUMN: Hero + 360 --- */}
-            <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-hidden">
+            <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
                 <HeroSection />
                 <ThreeSixtySection isDesktop={true} />
             </div>
@@ -516,7 +539,7 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE ONLY: 360 (Moved to Bottom) */}
+                    {/* MOBILE ONLY: 360 & Gallery (Moved to Bottom) */}
                     <div className="md:hidden">
                         <ThreeSixtySection isDesktop={false} />
                     </div>
