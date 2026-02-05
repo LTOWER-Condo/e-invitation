@@ -35,7 +35,7 @@ import {
  * - Mobile: 360 Height reduced (h-80).
  * - Tablet: 360 Height preserved (h-[500px]).
  * - Desktop: Fixed height 360 for consistent layout.
- * Fixes: Telegram Logo fixed (clean paper plane icon).
+ * Fixes: Share button copies link to clipboard.
  * Font: Kantumruy Pro
  */
 
@@ -45,6 +45,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwscAXNDULxa5
 // --- IMAGE PATH HELPER ---
 const getImg = (path) => {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Auto-detect if running on localhost or GitHub Pages
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const basePath = isLocal ? '/' : '/e-invitation/';
   return basePath + cleanPath;
@@ -111,6 +112,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
         setTextureLoaded(true);
     }, undefined, (err) => {
        console.warn("Texture load error", err);
+       // Ensure loader disappears even on error to avoid bad UX
        setTextureLoaded(true);
     });
     
@@ -265,7 +267,7 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                 <Globe className="w-3 h-3" /> មើលទីតាំង & 360°
             </h3>
 
-            {/* Fixed height for Desktop to match flow, Tall for Mobile */}
+            {/* ADJUSTED HEIGHT: h-80 (Mobile), md:h-[500px] (iPad), lg:h-[600px] (Desktop) */}
             <div className={`relative w-full rounded-xl overflow-hidden border border-neutral-700 group shadow-lg ${isDesktop ? 'h-[600px]' : 'h-80 md:h-[500px]'}`}>
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
@@ -342,6 +344,7 @@ const App = () => {
   const [rsvpStatus, setRsvpStatus] = useState('idle');
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const audioRef = useRef(null);
 
   // Set initial volume when audio ref is ready
@@ -373,6 +376,24 @@ const App = () => {
         }
         setIsMusicPlaying(!isMusicPlaying);
     }
+  };
+
+  const handleShare = () => {
+    const url = "https://ltower-condo.github.io/e-invitation/";
+    const textArea = document.createElement("textarea");
+    textArea.value = url;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset icon after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
+    
+    document.body.removeChild(textArea);
   };
 
   const handleInputChange = (e) => {
@@ -691,7 +712,7 @@ const App = () => {
                      <div className="flex gap-3">
                          <a href="https://t.me/lsaleservice" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#229ED9] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg">
                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                                 <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.373c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.414z"/>
+                                 <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.62 0zm4.905 8.52c-.145 2.808-1.094 8.8-1.69 11.985-.294 1.576-1.073 1.956-2.029 1.96-1.528.007-2.906-1.047-4.14-2.116-1.928-1.66-3.264-2.834-5.328-4.434-2.385-1.79-1.238-2.67.768-4.484.507-.457 7.923-7.55 7.923-7.55s.319-.296.069-.475c-.25-.178-1.527.996-3.666 2.459-2.99 1.996-5.882 3.69-6.388 3.655-.935-.065-2.222-.445-3.238-.795-1.252-.429-1.694-1.084-.363-1.694 5.372-2.318 10.742-3.86 14.546-4.526 3.618-.636 4.316.59 4.2 1.63z"/>
                              </svg>
                          </a>
                          <a href="https://www.facebook.com/ltowercondo/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-[#1877F2] rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg">
@@ -705,8 +726,11 @@ const App = () => {
                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                             </svg>
                          </a>
-                         <button className="w-8 h-8 bg-neutral-700 rounded-full flex items-center justify-center text-white hover:bg-neutral-600 transition-colors">
-                            <Share2 className="w-4 h-4" />
+                         <button 
+                            onClick={handleShare}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors ${isCopied ? 'bg-green-600' : 'bg-neutral-700 hover:bg-neutral-600'}`}
+                         >
+                            {isCopied ? <CheckCircle className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
                          </button>
                      </div>
                  </div>
