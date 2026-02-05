@@ -23,24 +23,27 @@ import {
   Smartphone,
   Volume2, 
   VolumeX,
-  Play
+  Play // Icon for the play button
 } from 'lucide-react';
 
 /**
  * L TOWER LOFT CONDO - INVITATION
  * Theme: Red & Gold Luxury
  * Content: Updated for "LTOWER Preah Monivong 2" event.
- * Layout: Responsive & Optimized.
- * Fixes: Lazy loading 360 viewer to prevent page freeze.
+ * Layout: 
+ * - Mobile: Vertical Stack (Hero -> Info -> 360 -> Gallery -> RSVP)
+ * - Desktop: Split (Left: Hero+360 | Right: Info+Gallery+RSVP)
+ * Fixes: Removed "Loft Condo" text from logo.
  * Font: Kantumruy Pro
  */
 
 // --- GOOGLE SHEET CONFIGURATION ---
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwscAXNDULxa5vLhz01vtzvsI-ZEGtlEA3vzjw4BDn-lLwQ980RslbsgqSBUHmorwA/exec";
 
-// --- IMAGE PATH HELPER (SMART DETECT) ---
+// --- IMAGE PATH HELPER ---
 const getImg = (path) => {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  // Auto-detect if running on localhost or GitHub Pages
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const basePath = isLocal ? '/' : '/e-invitation/';
   return basePath + cleanPath;
@@ -58,7 +61,7 @@ const Particle = ({ delay, left }) => (
   />
 );
 
-// --- 360 SPHERICAL VIEWER COMPONENT (Optimized) ---
+// --- 360 SPHERICAL VIEWER COMPONENT (Three.js) ---
 const ThreeSixtyViewer = ({ imageUrl }) => {
   const containerRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -101,13 +104,14 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
     geometry.scale(-1, 1, 1);
 
     const textureLoader = new THREE.TextureLoader();
-    // Use helper to resolve path correctly
     const finalUrl = imageUrl.startsWith('http') ? imageUrl : getImg(imageUrl);
 
     const texture = textureLoader.load(finalUrl, () => {
-        setTextureLoaded(true); // Texture loaded callback
+        setTextureLoaded(true);
     }, undefined, (err) => {
        console.warn("Texture load error", err);
+       // Ensure loader disappears even on error to avoid bad UX
+       setTextureLoaded(true);
     });
     
     const material = new THREE.MeshBasicMaterial({ map: texture });
@@ -181,12 +185,6 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
         window.removeEventListener('resize', onWindowResize);
         if (container) {
             container.innerHTML = '';
-            container.removeEventListener('mousedown', onPointerDown);
-            container.removeEventListener('mousemove', onPointerMove);
-            container.removeEventListener('mouseup', onPointerUp);
-            container.removeEventListener('touchstart', onPointerDown);
-            container.removeEventListener('touchmove', onPointerMove);
-            container.removeEventListener('touchend', onPointerUp);
         }
     };
   }, [isLoaded, imageUrl]);
@@ -197,7 +195,7 @@ const ThreeSixtyViewer = ({ imageUrl }) => {
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 z-10">
                 <div className="flex flex-col items-center">
                     <Loader className="w-8 h-8 text-amber-500 animate-spin mb-2" />
-                    <span className="text-xs text-gray-400">Loading 3D View...</span>
+                    <span className="text-xs text-gray-400">Loading 3D...</span>
                 </div>
             </div>
         )}
@@ -215,7 +213,6 @@ const LTowerLogo = ({ className = "" }) => (
       className="h-16 md:h-20 object-contain drop-shadow-lg"
       onError={(e) => { e.target.style.display = 'none'; }} 
     />
-
   </div>
 );
 
@@ -234,7 +231,6 @@ const SHOWROOM_IMAGES = [
 ];
 
 // --- SECTIONS COMPONENTS ---
-
 const HeroSection = () => (
     <div className="relative h-60 md:h-1/2 w-full group overflow-hidden shrink-0">
         <img 
@@ -252,6 +248,7 @@ const HeroSection = () => (
     </div>
 );
 
+// 360 Section with "Click to Load" functionality
 const ThreeSixtySection = ({ isDesktop = false }) => {
     const [start360, setStart360] = useState(false);
 
@@ -265,24 +262,31 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                 {start360 ? (
                     <ThreeSixtyViewer imageUrl="images/360.jpg" />
                 ) : (
-                    <div className="relative w-full h-full cursor-pointer group" onClick={() => setStart360(true)}>
+                    // STATIC PREVIEW MODE (Fast Loading)
+                    <div 
+                        className="relative w-full h-full cursor-pointer group bg-black" 
+                        onClick={() => setStart360(true)}
+                    >
                         <img 
                             src={getImg("images/360.jpg")} 
                             alt="360 Preview" 
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
                             onError={(e) => { e.target.src = getImg("images/building.jpg"); }}
                         />
-                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-2 group-hover:bg-black/30 transition-colors">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10">
                             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-xl group-hover:scale-110 transition-transform">
-                                <Play className="w-5 h-5 text-white fill-current" />
+                                <Play className="w-5 h-5 text-white fill-current ml-1" />
                             </div>
-                            <span className="text-xs font-bold text-white uppercase tracking-wider">Tap to View 360°</span>
+                            <span className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/50 px-3 py-1 rounded-full border border-white/20">
+                                Tap to View 360°
+                            </span>
                         </div>
                     </div>
                 )}
                 
+                {/* 360 Badge - Only show when active or as overlay */}
                 {start360 && (
-                     <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none">
+                     <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-white/20 flex items-center gap-2 pointer-events-none z-20">
                         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
                         <span className="text-[8px] font-bold uppercase tracking-wider text-white">360° Sphere</span>
                     </div>
@@ -476,27 +480,25 @@ const App = () => {
         </div>
       ) : (
         // === MAIN INVITATION SCREEN ===
-        <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-center pt-4 pb-20 md:py-10 px-4 animate-fade-in-up">
+        <div className="min-h-screen w-full bg-neutral-950 flex flex-col items-center justify-start md:justify-center pt-0 md:pt-4 pb-0 md:pb-10 px-0 md:px-4 animate-fade-in-up">
           
           {/* Main Card Container */}
-          <div className="w-full max-w-lg md:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] rounded-3xl overflow-hidden relative flex flex-col md:flex-row md:h-[90vh]">
+          <div className="w-full max-w-lg md:max-w-7xl mx-auto bg-zinc-900 border border-neutral-800 shadow-[0_0_60px_rgba(185,28,28,0.3)] md:rounded-3xl overflow-hidden relative flex flex-col md:flex-row md:h-[90vh]">
             
             {/* Top Decorative Line */}
             <div className="h-1 w-full bg-gradient-to-r from-red-700 via-red-500 to-amber-500 shrink-0 md:hidden"></div>
 
-            {/* --- DESKTOP LEFT COLUMN: Hero + 360 --- */}
+            {/* --- DESKTOP LEFT COLUMN --- */}
             <div className="hidden md:flex w-[55%] flex-col bg-black/20 relative border-r border-neutral-800 h-full overflow-y-auto no-scrollbar">
                 <HeroSection />
                 <ThreeSixtySection isDesktop={true} />
             </div>
 
-            {/* --- RIGHT COLUMN / MOBILE MAIN (Content) --- */}
+            {/* --- RIGHT COLUMN / MOBILE MAIN --- */}
             <div className="w-full md:w-[45%] flex flex-col bg-zinc-900 h-auto md:h-full relative">
                 
-                {/* Scrollable Container */}
                 <div className="h-auto md:flex-1 md:overflow-y-auto pb-24 md:pb-32 no-scrollbar"> 
                     
-                    {/* Header / Logo */}
                     <div className="pt-8 pb-6 text-center px-6 bg-black md:bg-zinc-900/50 sticky top-0 z-10 backdrop-blur-sm">
                       <div className="flex justify-center mb-4">
                         <LTowerLogo className="scale-75 origin-center" />
@@ -509,7 +511,6 @@ const App = () => {
                         <HeroSection />
                     </div>
 
-                    {/* Main Content (Info) */}
                     <div className="px-6 py-6 text-center relative">
                       <h1 className="text-xl font-bold leading-tight mb-4 text-white">
                         កម្មវិធីបើកលក់ <br/>
@@ -567,13 +568,16 @@ const App = () => {
                       </div>
                     </div>
 
-                    {/* MOBILE ONLY: 360 (Moved to Bottom) */}
-                    <div className="md:hidden">
+                    {/* MOBILE ONLY: 360 & Gallery (Moved to Bottom) */}
+                    <div className="md:hidden pb-12">
                         <ThreeSixtySection isDesktop={false} />
+                        <GallerySection isDesktop={false} />
                     </div>
 
-                    {/* GALLERY (Both Desktop Right & Mobile Bottom) */}
-                    <GallerySection isDesktop={true} />
+                    {/* DESKTOP ONLY: Gallery */}
+                    <div className="hidden md:block">
+                        <GallerySection isDesktop={true} />
+                    </div>
 
                     {/* RSVP FORM Section */}
                     <div className="px-6 pt-6 bg-zinc-900 border-t border-neutral-800 md:border-none mb-12">
@@ -597,7 +601,6 @@ const App = () => {
                           <button onClick={() => setRsvpStatus('idle')} className="text-white text-[10px] font-bold uppercase underline mt-2">កែប្រែ (Undo)</button>
                         </div>
                       ) : (
-                        /* DEFAULT FORM VIEW (IDLE) */
                         <form onSubmit={handleSubmitRegistration} className="flex flex-col gap-4 animate-fade-in-up">
                           <div className="flex items-center justify-between">
                               <h3 className="text-white font-bold text-sm uppercase tracking-wider flex items-center gap-2">
