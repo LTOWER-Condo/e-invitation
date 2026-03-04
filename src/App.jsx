@@ -264,7 +264,7 @@ const SHOWROOM_IMAGES = [
 const HeroSection = ({ isMobile }) => (
     <div className={`relative w-full group overflow-hidden shrink-0 ${isMobile ? 'h-80' : 'h-[500px] lg:h-[600px]'}`}>
         <img 
-            src={getImg("images/building.jpg")}
+            src={getImg("images/Cover.JPG")}
             alt="L Tower Loft Interior" 
             className="w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-110"
             onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1000&auto=format&fit=crop"; }}
@@ -301,7 +301,7 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
                             src={getImg("images/360.jpg")} 
                             alt="360 Preview" 
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
-                            onError={(e) => { e.target.src = getImg("images/building.jpg"); }}
+                            onError={(e) => { e.target.src = getImg("images/Cover.JPG"); }}
                         />
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 z-10">
                             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-xl group-hover:scale-110 transition-transform">
@@ -500,7 +500,7 @@ const App = () => {
 
           <div className="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
              <img 
-              src={getImg("images/building.jpg")}
+              src={getImg("images/Cover.JPG")}
               alt="Luxury Condo" 
               className="w-full h-full object-cover grayscale contrast-125"
               onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1000&auto=format&fit=crop"; }} 
