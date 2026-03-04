@@ -852,7 +852,7 @@ const App = () => {
           100% { transform: translateX(-50%); }
         }
         .animate-scroll {
-          animation: scroll 40s linear infinite; /* Adjusted speed for "slow slide" */
+          animation: scroll 120s linear infinite; /* Increased duration from 40s to 120s for much slower slide */
         }
         .animate-scroll:hover {
           animation-play-state: paused;
