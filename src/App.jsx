@@ -23,7 +23,10 @@ import {
   Smartphone,
   Volume2, 
   VolumeX,
-  Play // Icon for the play button
+  Play, // Icon for the play button
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 /**
@@ -226,16 +229,34 @@ const LTowerLogo = ({ className = "" }) => (
 
 // --- SHOWROOM IMAGES DATA ---
 const SHOWROOM_IMAGES = [
-  "images/bathroom.jpg",
-  "images/gym.jpg",
-  "images/IMG_3299.jpg",
-  "images/IMG_3300.jpg",
-  "images/IMG_3301.jpg",
-  "images/IMG_8948.jpg",
-  "images/kitchen.jpg",
-  "images/IMG_8972.jpg",
-  "images/IMG_8949.jpg",
-  "images/IMG_8974.jpg"
+  "images/room/IMG_2949.jpg",
+  "images/room/IMG_2952.jpg",
+  "images/room/IMG_2958.jpg",
+  "images/room/IMG_2959.jpg",
+  "images/room/IMG_2960.jpg",
+  "images/room/IMG_2961.jpg",
+  "images/room/IMG_2962.jpg",
+  "images/room/IMG_2963.jpg",
+  "images/room/IMG_2964.jpg",
+  "images/room/IMG_2965.jpg",
+  "images/room/IMG_2966.jpg",
+  "images/room/IMG_2967.jpg",
+  "images/room/IMG_2969.jpg",
+  "images/room/IMG_2971.jpg",
+  "images/room/IMG_2972.jpg",
+  "images/room/IMG_2973.jpg",
+  "images/room/IMG_2975.jpg",
+  "images/room/IMG_2977.jpg",
+  "images/room/IMG_2980.jpg",
+  "images/room/IMG_2982.jpg",
+  "images/room/IMG_2986.jpg",
+  "images/room/IMG_2987.jpg",
+  "images/room/IMG_2988.jpg",
+  "images/room/IMG_2989.jpg",
+  "images/room/IMG_2990.jpg",
+  "images/room/IMG_2991.jpg",
+  "images/room/IMG_2992.jpg",
+  "images/room/IMG_2993.jpg"
 ];
 
 // --- SECTIONS COMPONENTS ---
@@ -314,7 +335,7 @@ const ThreeSixtySection = ({ isDesktop = false }) => {
     );
 };
 
-const GallerySection = ({ isDesktop = false }) => (
+const GallerySection = ({ isDesktop = false, onImageClick }) => (
     <div className={`bg-zinc-900 ${isDesktop ? 'bg-transparent pt-6' : 'pt-6 pb-6 border-t border-neutral-800'} overflow-hidden shrink-0`}>
         {!isDesktop && <div className="w-full h-[1px] bg-neutral-800/50 mx-6 mb-4 w-[calc(100%-48px)]"></div>}
         <h3 className="text-center text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
@@ -323,7 +344,11 @@ const GallerySection = ({ isDesktop = false }) => (
         <div className="relative w-full overflow-hidden">
             <div className="flex w-max animate-scroll">
                 {[...SHOWROOM_IMAGES, ...SHOWROOM_IMAGES].map((img, idx) => (
-                    <div key={idx} className="w-48 h-32 mx-2 rounded-lg overflow-hidden shrink-0 border border-neutral-700 relative group">
+                    <div 
+                        key={idx} 
+                        className="w-48 h-32 mx-2 rounded-lg overflow-hidden shrink-0 border border-neutral-700 relative group cursor-pointer"
+                        onClick={() => onImageClick(idx % SHOWROOM_IMAGES.length)}
+                    >
                         <img 
                             src={getImg(img)} 
                             alt={`Showroom ${idx}`} 
@@ -346,6 +371,18 @@ const App = () => {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const audioRef = useRef(null);
+
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const openGallery = (index) => {
+      setSelectedImageIndex(index);
+      setIsGalleryOpen(true);
+  };
+
+  const closeGallery = () => setIsGalleryOpen(false);
+  const nextImage = () => setSelectedImageIndex((prev) => (prev + 1) % SHOWROOM_IMAGES.length);
+  const prevImage = () => setSelectedImageIndex((prev) => (prev === 0 ? SHOWROOM_IMAGES.length - 1 : prev - 1));
 
   // Set initial volume when audio ref is ready
   useEffect(() => {
@@ -480,12 +517,12 @@ const App = () => {
              </div>
              
              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.6)] mb-3 leading-relaxed tracking-wide">
-               កម្មវិធីបើកលក់
+               Grand Opening
              </h1>
              
              <div className="relative mb-4">
                <h2 className="text-xl sm:text-2xl md:text-4xl font-black text-[#FCD34D] drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] leading-relaxed animate-fade-in-up px-2 uppercase">
-                 LTOWER ព្រះមុនីវង្ស 2
+                 គម្រោង ព្រះមុនីវង្សថ្មី
                </h2>
              </div>
 
@@ -494,7 +531,7 @@ const App = () => {
              </div>
 
              <div className="bg-gradient-to-r from-red-600 to-red-800 px-6 py-2 rounded-full border border-red-400 shadow-[0_0_15px_rgba(220,38,38,0.5)] transform rotate-[-2deg]">
-               <p className="text-white text-base md:text-lg font-bold tracking-wide">តម្លៃជាង <span className="text-[#FCD34D] text-lg md:text-xl">$50,000</span></p>
+               <p className="text-white text-base md:text-lg font-bold tracking-wide">គ្មានប្រាក់កក់, គ្មានការប្រាក់</p>
              </div>
           </div>
 
@@ -542,7 +579,7 @@ const App = () => {
                   <div className="flex justify-center mb-4">
                     <LTowerLogo className="scale-75 origin-center" />
                   </div>
-                  <p className="text-amber-500 uppercase tracking-[0.3em] text-[10px] font-bold">Grand Opening LTOWER Monivong 2</p>
+                  <p className="text-amber-500 uppercase tracking-[0.3em] text-[10px] font-bold">Grand Opening LTOWER Monivong (New)</p>
                 </div>
 
                 {/* MOBILE: Hero Image (Top) */}
@@ -553,14 +590,14 @@ const App = () => {
                 {/* Main Content (Info) */}
                 <div className="px-4 md:px-6 py-6 text-center relative">
                   <h1 className="text-xl md:text-2xl font-bold leading-tight mb-4 text-white">
-                    កម្មវិធីបើកលក់ <br/>
-                    <span className="text-[#FCD34D] text-2xl md:text-3xl">LTOWER ព្រះមុនីវង្ស 2</span>
+                    Grand Opening <br/>
+                    <span className="text-[#FCD34D] text-2xl md:text-3xl">គម្រោង ព្រះមុនីវង្សថ្មី</span>
                   </h1>
                   
                   <div className="bg-white/5 rounded-xl p-4 border border-white/10 mb-6">
                     <p className="text-gray-300 text-sm leading-relaxed font-light text-justify">
                       <span className="font-bold text-amber-500 text-sm block mb-2 text-center">សូមគោរពអញ្ជើញ!</span>
-                      ឯកឧត្តម លោកជំទាវ អ្នកឧកញ៉ា ឧកញ៉ា លោក លោកស្រី អ្នកនាង កញ្ញា ចូលរួមកម្មវិធីបើកលក់តម្លៃពិសេសមិនធ្លាប់មាន ស្ថិតនៅលើទីតាំងល្អ ដែលមានសក្តានុពល និងផ្តល់ផលចំនេញច្រើន ទាំងការវិនិយោគ ការដាក់ជួល និងការស្នាក់នៅ។
+                      ឯកឧត្តម លោកជំទាវ អ្នកឧកញ៉ា ឧកញ៉ា លោក លោកស្រី អ្នកនាង កញ្ញា ចូលរួមកម្មវិធីបើកលក់តម្លៃ <strong className="font-bold text-white">Pre-Sale</strong> មិនធ្លាប់មាន ស្ថិតនៅលើទីតាំងល្អ ដែលមានសក្តានុពល និងផ្តល់ផលចំនេញច្រើន ទាំងការវិនិយោគ ការដាក់ជួល និងការស្នាក់នៅ។
                     </p>
                   </div>
 
@@ -570,16 +607,16 @@ const App = () => {
                       <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white mb-2 shadow-lg">
                         <Layers className="w-4 h-4" />
                       </div>
-                      <p className="text-[10px] text-red-300 uppercase font-bold">Promotion</p>
-                      <p className="text-sm font-bold text-white leading-tight">ទិញខុនដូ<br/><span className="text-amber-400">2ជាន់ពិសេស</span></p>
+                      <p className="text-[10px] text-red-300 uppercase font-bold">តម្លៃធូរ</p>
+                      <p className="text-sm font-bold text-white leading-tight">មានត្រឹម1%<br/><span className="text-amber-400">បន្ទប់ធំ</span></p>
                     </div>
                     
                     <div className="bg-gradient-to-br from-zinc-800 to-black p-3 rounded-xl border border-zinc-700 flex flex-col items-center justify-center">
                       <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center text-green-400 mb-2 shadow-lg">
                         <DollarSign className="w-4 h-4" />
                       </div>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold">បង់ប្រចាំខែ</p>
-                      <p className="text-xl font-bold text-white">$2xx <span className="text-[10px] font-normal">/ខែ</span></p>
+                      <p className="text-[10px] text-gray-400 uppercase font-bold">គ្មានប្រាក់កក់</p>
+                      <p className="text-sm md:text-base font-bold text-white">គ្មានការប្រាក់</p>
                     </div>
                   </div>
 
@@ -591,7 +628,7 @@ const App = () => {
                       </div>
                       <div className="ml-3 text-left">
                         <p className="text-[10px] text-gray-500 uppercase font-bold">កាលបរិច្ឆេទ / Date</p>
-                        <p className="font-bold text-sm text-white">21 មីនា 2026</p>
+                        <p className="font-bold text-sm text-white">07 មីនា 2026</p>
                       </div>
                     </div>
 
@@ -610,13 +647,13 @@ const App = () => {
 
                 {/* MOBILE/TABLET: Gallery & 360 (Moved to Bottom) */}
                 <div className="lg:hidden pb-12">
-                    <GallerySection isDesktop={false} />
+                    <GallerySection isDesktop={false} onImageClick={openGallery} />
                     <ThreeSixtySection isDesktop={false} />
                 </div>
 
                 {/* DESKTOP ONLY: Gallery */}
                 <div className="hidden lg:block">
-                    <GallerySection isDesktop={true} />
+                    <GallerySection isDesktop={true} onImageClick={openGallery} />
                 </div>
 
                 {/* RSVP FORM Section */}
@@ -737,6 +774,38 @@ const App = () => {
             </div>
 
           </div>
+        </div>
+      )}
+
+      {/* --- FULLSCREEN GALLERY MODAL --- */}
+      {isGalleryOpen && (
+        <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex items-center justify-center animate-fade-in-up">
+            <button 
+                onClick={closeGallery} 
+                className="absolute top-6 right-6 text-white hover:text-red-500 z-[210] bg-black/50 p-3 rounded-full transition-colors border border-white/10"
+            >
+                <X className="w-6 h-6" />
+            </button>
+            <button 
+                onClick={prevImage} 
+                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white hover:text-amber-500 z-[210] bg-black/50 p-3 rounded-full transition-colors border border-white/10"
+            >
+                <ChevronLeft className="w-8 h-8 md:w-10 md:h-10" />
+            </button>
+            <button 
+                onClick={nextImage} 
+                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white hover:text-amber-500 z-[210] bg-black/50 p-3 rounded-full transition-colors border border-white/10"
+            >
+                <ChevronRight className="w-8 h-8 md:w-10 md:h-10" />
+            </button>
+            <img 
+                src={getImg(SHOWROOM_IMAGES[selectedImageIndex])} 
+                alt="Fullscreen Gallery" 
+                className="max-w-full max-h-[80vh] md:max-h-[90vh] object-contain px-16 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+            />
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white bg-black/50 px-6 py-2 rounded-full text-sm tracking-widest border border-white/10">
+                {selectedImageIndex + 1} / {SHOWROOM_IMAGES.length}
+            </div>
         </div>
       )}
       
